@@ -1,0 +1,9 @@
+version: '3.3'
+
+services:
+  down-alerting-bot:
+    container_name: down-alerting-bot
+    restart: always
+    build:
+      context: .
+    env_file: .env
