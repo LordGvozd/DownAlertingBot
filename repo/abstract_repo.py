@@ -12,7 +12,7 @@ class AbstractRepo(ABC):
         pass
 
     @abstractmethod
-    def save_services_state(self, services: list[[ServiceInfo]]) -> None:
+    def save_services_state(self, services: list[ServiceInfo]) -> None:
         pass
 
     @abstractmethod
