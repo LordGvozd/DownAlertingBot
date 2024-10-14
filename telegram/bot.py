@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import Bot, Dispatcher
 
 from parser.downdetectorsu_parser import DownDetectorSuParser
@@ -12,8 +14,8 @@ dp = Dispatcher(repo=JsonRepo(STORAGE_PATH), parser=DownDetectorSuParser())
 dp.include_router(router)
 
 
-def run() -> None:
-    start_updating(dp, bot)
-    dp.run_polling(bot)
+async def run() -> None:
+    asyncio.ensure_future(start_updating(dp, bot))
+    await dp.start_polling(bot)
 
 

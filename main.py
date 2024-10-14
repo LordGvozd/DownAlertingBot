@@ -3,4 +3,4 @@ import asyncio
 
 
 if __name__ == "__main__":
-    bot.run()
+    asyncio.run(bot.run())

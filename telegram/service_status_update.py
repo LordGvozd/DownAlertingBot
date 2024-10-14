@@ -9,12 +9,14 @@ from parser.abstract_parser import AbstractDownDetectorParser
 from repo.abstract_repo import AbstractRepo
 
 
-def start_updating(dp: Dispatcher, bot: Bot) -> None:
-    asyncio.ensure_future(update_loop(dp, bot))
+async def start_updating(dp: Dispatcher, bot: Bot) -> None:
+    await update_loop(dp, bot)
 
 async def update_loop(dp: Dispatcher, bot: Bot) -> None:
     # Wait, while bot and dp would fully load
     await asyncio.sleep(5)
+
+    print("Start loop")
 
     repo: AbstractRepo = dp["repo"]
     parser: AbstractDownDetectorParser = dp["parser"]
@@ -28,6 +30,7 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
         # Find diff
         for s in new_state:
             if s not in old_state:
+                print(s, old_state)
                 services_to_alert.append(s)
 
         repo.save_services_state(new_state)
@@ -46,9 +49,14 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
 
             answer_text += f"{status_smail} {s.service_name}\n"
 
+        if not answer_text:
+            # Wait
+            await asyncio.sleep(UPDATE_TIME * 60)
+            continue
+
         # Send broadcast
         for u in repo.get_all_users():
             await bot.send_message(u, answer_text)
 
         # Wait
-        await asyncio.sleep(UPDATE_TIME)
+        await asyncio.sleep(UPDATE_TIME * 60)

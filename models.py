@@ -8,8 +8,10 @@ class ServiceStatus(str, enum.Enum):
     ERROR = "ERROR"
 
 
-@dataclass(frozen=True)
+@dataclass
 class ServiceInfo:
     service_name: str
     problem_status: ServiceStatus
 
+if __name__ == '__main__':
+    print(ServiceInfo("l", ServiceStatus.ERROR) in [ ServiceInfo("l", ServiceStatus.OK), ])

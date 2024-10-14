@@ -2,7 +2,7 @@ import json
 import os.path
 from wsgiref.simple_server import server_version
 
-from models import ServiceInfo
+from models import ServiceInfo, ServiceStatus
 from repo.abstract_repo import AbstractRepo
 
 
@@ -42,18 +42,20 @@ class JsonRepo(AbstractRepo):
         if not self.__json["state"]:
             for s in services:
                 self.__json["state"].append({"service_name": s.service_name,
-                                             "problem_status": str(s.problem_status)})
+                                             "problem_status": s.problem_status.value})
                 self.__save_json()
 
     def get_services_state(self) -> list[ServiceInfo]:
         self.__load_json()
         services = []
 
-        for s in self.__json["services"]:
+        for s in self.__json["state"]:
             services.append(ServiceInfo(
                 s["service_name"],
-                s["problem_status"]
+                ServiceStatus(s["problem_status"])
             ))
 
         return services
 
+if __name__ == '__main__':
+    print(ServiceStatus.ERROR.value, ServiceStatus("ERROR"))
