@@ -10,13 +10,13 @@ router = Router()
 
 @router.message(CommandStart())
 async def start_cmd(msg: types.Message, repo: AbstractRepo) -> None:
-    repo.save_user(str(msg.from_user.id))
+    await repo.save_user(str(msg.from_user.id))
     await msg.answer(f"Hello, {msg.from_user.full_name}!")
 
 
 @router.message(Command("users"))
 async def users_cmd(msg: types.Message, repo: AbstractRepo) -> None:
-    all_users = repo.get_all_users()
+    all_users = await repo.get_all_users()
 
     answer_text = " ".join(all_users)
     if not answer_text:

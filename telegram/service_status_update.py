@@ -14,26 +14,25 @@ async def start_updating(dp: Dispatcher, bot: Bot) -> None:
 
 async def update_loop(dp: Dispatcher, bot: Bot) -> None:
     # Wait, while bot and dp would fully load
-    await asyncio.sleep(5)
-
-    print("Start loop")
+    await asyncio.sleep(3)
 
     repo: AbstractRepo = dp["repo"]
     parser: AbstractDownDetectorParser = dp["parser"]
 
     while True:
-        old_state = repo.get_services_state()
+        old_state = await repo.get_services_state()
         new_state = parser.get_problems_services()
 
-        services_to_alert = []
 
+        services_to_alert = []
+        print(old_state)
         # Find diff
         for s in new_state:
             if s not in old_state:
-                print(s, old_state)
+                print(s)
                 services_to_alert.append(s)
 
-        repo.save_services_state(new_state)
+        asyncio.ensure_future(repo.save_services_state(new_state))
 
         answer_text = ""
 
@@ -55,7 +54,7 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
             continue
 
         # Send broadcast
-        for u in repo.get_all_users():
+        for u in await repo.get_all_users():
             await bot.send_message(u, answer_text)
 
         # Wait
