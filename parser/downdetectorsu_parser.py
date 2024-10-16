@@ -17,12 +17,16 @@ class DownDetectorSuParser(AbstractDownDetectorParser):
         warning_cards = main_cards_container.find_all("a", class_="card")
         error_cards = main_cards_container.find_all("a", class_="card down")
 
-        warning_services = [
-            ServiceInfo(service_name=c["data-service"], problem_status=ServiceStatus.WARNING) for c in warning_cards
-        ]
         error_services = [
             ServiceInfo(service_name=c["data-service"], problem_status=ServiceStatus.ERROR) for c in error_cards
         ]
+
+
+        warning_services = [
+            ServiceInfo(service_name=c["data-service"], problem_status=ServiceStatus.WARNING) for c in warning_cards
+            if c["data-service"] not in [ec["data-service"] for ec in error_cards]
+        ]
+
 
         return error_services + warning_services
 
