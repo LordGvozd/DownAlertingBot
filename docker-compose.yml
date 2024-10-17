@@ -17,7 +17,7 @@ services:
     volumes:
       - ./db:/data/db:rw
     ports:
-      - 27017:271017
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: ME_CONFIG_MONGODB_ADMINUSERNAME
       MONGO_INITDB_ROOT_PASSWORD: ME_CONFIG_MONGODB_ADMINPASSWORD
