@@ -6,25 +6,18 @@ services:
     restart: always
     build:
       context: .
-    env_file: .env
+    env_file:
+      - .env
     depends_on:
       - mongo
 
   mongo:
-    container_name: mongo
     image: mongo
     restart: always
     volumes:
       - ./db:/data/db:rw
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ME_CONFIG_MONGODB_ADMINUSERNAME
-      MONGO_INITDB_ROOT_PASSWORD: ME_CONFIG_MONGODB_ADMINPASSWORD
-
 
   mongo-express:
-    container_name: mongo-express
     image: mongo-express
     restart: always
     env_file:

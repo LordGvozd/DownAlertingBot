@@ -2,3 +2,5 @@
 .venv/
 .env
 __pycahe__/
+./db/
+db/
