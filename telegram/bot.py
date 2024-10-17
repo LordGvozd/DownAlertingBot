@@ -5,7 +5,6 @@ from aiogram import Bot, Dispatcher
 from parser.downdetectorsu_parser import DownDetectorSuParser
 from repo.mongo_repo import MongoRepo
 from telegram.handlers import router
-from repo.json_repo import JsonRepo
 
 from config import BOT_TOKEN, MONGO_URI
 from telegram.service_status_update import start_updating

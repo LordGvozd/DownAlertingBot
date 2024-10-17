@@ -4,7 +4,7 @@ from aiogram import Dispatcher, Bot
 
 import config
 from config import UPDATE_TIME
-from models import ServiceStatus
+from models import ServiceStatus, ServiceInfo
 from parser.abstract_parser import AbstractDownDetectorParser
 from repo.abstract_repo import AbstractRepo
 
@@ -25,14 +25,20 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
 
 
         services_to_alert = []
-        print(old_state)
+
         # Find diff
         for s in new_state:
             if s not in old_state:
-                print(s)
                 services_to_alert.append(s)
 
         asyncio.ensure_future(repo.save_services_state(new_state))
+
+        for service_name in [n.service_name for n in old_state]:
+            if not service_name in [n.service_name for n in new_state]:
+                services_to_alert.append(ServiceInfo(
+                    service_name=service_name,
+                    problem_status=ServiceStatus.OK
+                ))
 
         answer_text = ""
 
