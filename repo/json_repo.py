@@ -42,7 +42,7 @@ class JsonRepo(AbstractRepo):
         if not self.__json["state"]:
             for s in services:
                 self.__json["state"].append({"service_name": s.service_name,
-                                             "problem_status": s.problem_status.value})
+                                             "problem_status": s.service_status.value})
                 self.__save_json()
 
     def get_services_state(self) -> list[ServiceInfo]:

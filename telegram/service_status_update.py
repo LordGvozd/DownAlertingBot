@@ -20,31 +20,42 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
     parser: AbstractDownDetectorParser = dp["parser"]
 
     while True:
-        old_state = await repo.get_services_state()
-        new_state = parser.get_problems_services()
+        old_services = await repo.get_services_state()
+        new_problems_services = parser.get_problems_services()
 
-
+        updated_services = new_problems_services
         services_to_alert = []
 
         # Find diff
-        for s in new_state:
-            if s not in old_state:
+        for s in new_problems_services:
+            if s not in old_services:
                 services_to_alert.append(s)
 
-        asyncio.ensure_future(repo.save_services_state(new_state))
 
-        for service_name in [n.service_name for n in old_state]:
-            if not service_name in [n.service_name for n in new_state]:
-                services_to_alert.append(ServiceInfo(
-                    service_name=service_name,
-                    problem_status=ServiceStatus.OK
-                ))
+
+        for service in old_services:
+            if (not service.service_name in [n.service_name for n in new_problems_services]
+                    and
+                    service.service_status != ServiceStatus.OK):
+
+                ok_service = ServiceInfo(
+                    service_name=service.service_name,
+                    service_status=ServiceStatus.OK
+                )
+
+                updated_services.append(ok_service)
+                services_to_alert.append(ok_service)
+
+        # Save changes to repo
+        asyncio.ensure_future(repo.save_services_state(updated_services))
+
+        # Sort
 
         answer_text = ""
 
         status_smail = ""
         for s in services_to_alert:
-            match s.problem_status:
+            match s.service_status:
                 case ServiceStatus.OK:
                     status_smail = "🟢"
                 case ServiceStatus.WARNING:

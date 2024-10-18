@@ -33,7 +33,7 @@ class MongoRepo(AbstractRepo):
             asyncio.ensure_future(self.__services.update_one(filter={"service_name": s.service_name},
                                        upsert=True,
                                        update={
-                                           "$set": {"problem_status": s.problem_status.value},
+                                           "$set": {"service_status": s.service_status.value},
                                            "$setOnInsert": {"service_name": s.service_name}
                                        }))
 
@@ -42,7 +42,7 @@ class MongoRepo(AbstractRepo):
         async for s in self.__services.find({}, {"_id": 0}):
             services.append(ServiceInfo(
                 service_name=s["service_name"],
-                problem_status=ServiceStatus(s["problem_status"])
+                service_status=ServiceStatus(s["service_status"])
             ))
 
         return services

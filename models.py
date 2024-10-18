@@ -11,7 +11,7 @@ class ServiceStatus(str, enum.Enum):
 @dataclass
 class ServiceInfo:
     service_name: str
-    problem_status: ServiceStatus
+    service_status: ServiceStatus
 
 if __name__ == '__main__':
     print(ServiceInfo("l", ServiceStatus.ERROR) in [ ServiceInfo("l", ServiceStatus.OK), ])

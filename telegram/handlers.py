@@ -32,7 +32,7 @@ async def stats_cmd(msg: types.Message, parser: AbstractDownDetectorParser) -> N
 
     status_smail = ""
     for s in services:
-        match s.problem_status:
+        match s.service_status:
             case ServiceStatus.OK:
                 status_smail = "🟢"
             case ServiceStatus.WARNING:
