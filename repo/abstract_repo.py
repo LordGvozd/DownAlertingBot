@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 
-from models import ServiceInfo
+from schemas import ServiceInfo, User
+
 
 class AbstractRepo(ABC):
     @abstractmethod
-    async def save_user(self, tg_id: str) -> None:
+    async def save_user(self, user: User) -> None:
         pass
 
     @abstractmethod
-    async def get_all_users(self) -> list[str]:
+    async def get_all_users(self) -> list[User]:
         pass
 
     @abstractmethod

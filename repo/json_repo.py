@@ -2,7 +2,7 @@ import json
 import os.path
 from wsgiref.simple_server import server_version
 
-from models import ServiceInfo, ServiceStatus
+from schemas import ServiceInfo, ServiceStatus
 from repo.abstract_repo import AbstractRepo
 
 

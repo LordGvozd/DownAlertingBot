@@ -1,10 +1,13 @@
 import asyncio
+from datetime import datetime, timedelta
 
+import aiogram.exceptions
 from aiogram import Dispatcher, Bot
+from loguru import logger
 
 import config
 from config import UPDATE_TIME
-from models import ServiceStatus, ServiceInfo
+from schemas import ServiceStatus, ServiceInfo
 from parser.abstract_parser import AbstractDownDetectorParser
 from repo.abstract_repo import AbstractRepo
 
@@ -49,7 +52,10 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
         # Save changes to repo
         asyncio.ensure_future(repo.save_services_state(updated_services))
 
-        # Sort
+        # Sort services in alphabet order
+        services_to_alert.sort(key=lambda x: x.service_name.lower())
+
+
 
         answer_text = ""
 
@@ -72,7 +78,15 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
 
         # Send broadcast
         for u in await repo.get_all_users():
-            await bot.send_message(u, answer_text)
+            try:
+                if (datetime.now() - u.last_update_time).seconds * 60 >= u.update_delay_min:
+                   u.last_update_time = datetime.now()
+                   await repo.save_user(u)
+
+                   await bot.send_message(u.tg_id, answer_text)
+            except aiogram.exceptions.AiogramError as e:
+                logger.error(f"Error when send broadcast to user {u}: '{e}'")
+
 
         # Wait
-        await asyncio.sleep(UPDATE_TIME * 60)
+        await asyncio.sleep(10 * 60)

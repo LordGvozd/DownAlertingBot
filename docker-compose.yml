@@ -14,12 +14,16 @@ services:
   mongo:
     image: mongo
     restart: always
+    logging:
+      driver: none
     volumes:
       - ./db:/data/db:rw
 
   mongo-express:
     image: mongo-express
     restart: always
+    logging:
+      driver: none
     env_file:
       - .env
     ports:

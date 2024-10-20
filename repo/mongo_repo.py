@@ -2,7 +2,7 @@ import asyncio
 
 from  motor.motor_asyncio import AsyncIOMotorClient
 
-from models import ServiceInfo, ServiceStatus
+from schemas import ServiceInfo, ServiceStatus, User
 from repo.abstract_repo import AbstractRepo
 
 
@@ -15,16 +15,20 @@ class MongoRepo(AbstractRepo):
         self.__users = self.__db["users"]
         self.__services = self.__db["services"]
 
-    async def save_user(self, tg_id: str) -> None:
-        if not await self.__users.find_one({"tg_id": tg_id}):
-            asyncio.ensure_future(self.__users.insert_one({"tg_id": tg_id}))
+    async def save_user(self, user: User) -> None:
+        asyncio.ensure_future(self.__users.update_one(filter={"tg_id": user.tg_id},
+                                                      upsert=True,
+                                                      update={
+                                                          "$set": user.model_dump(exclude={"tg_id"}),
+                                                          "$setOnInsert": {"tg_id": user.tg_id}
+                                                      }))
 
-    async def get_all_users(self) -> list[str]:
+    async def get_all_users(self) -> list[User]:
         users_raw = self.__users.find({}, {"_id": 0})
 
         users = []
         async for u in users_raw:
-            users.append(str(u["tg_id"]))
+            users.append(User.model_validate(u))
 
         return users
 

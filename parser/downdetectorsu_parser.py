@@ -1,7 +1,7 @@
 import requests as r
 from bs4 import BeautifulSoup
 
-from models import ServiceInfo, ServiceStatus
+from schemas import ServiceInfo, ServiceStatus
 from parser.abstract_parser import AbstractDownDetectorParser
 
 
