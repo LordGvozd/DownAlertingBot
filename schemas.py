@@ -12,7 +12,7 @@ class ServiceStatus(str, enum.Enum):
 class User(BaseModel):
     """ User class """
     tg_id: str
-    update_delay_min: int = 1
+    update_delay_min: int = 10
     last_update_time: datetime = datetime.now()
 
 class ServiceInfo(BaseModel):
