@@ -4,6 +4,7 @@ from aiogram import Router, types
 from aiogram.filters import CommandStart, Command
 from soupsieve import match
 
+from config import UPDATE_TIME
 from schemas import ServiceStatus, User
 from parser.abstract_parser import AbstractDownDetectorParser
 from repo.abstract_repo import AbstractRepo
@@ -27,8 +28,8 @@ async def set_delay_cmd(msg: types.Message, repo: AbstractRepo) -> None:
         await msg.answer("Укажите число!")
         return
 
-    if delay < 10:
-        await msg.answer("Укажите число больше 10!")
+    if delay < UPDATE_TIME:
+        await msg.answer(f"Укажите число больше {UPDATE_TIME - 1}!")
         return
     if delay > 100000:
         await msg.answer("Слишком большое число!")

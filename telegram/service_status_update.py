@@ -1,4 +1,5 @@
 import asyncio
+import time
 from datetime import datetime, timedelta
 
 import aiogram.exceptions
@@ -28,6 +29,7 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
 
         updated_services = new_problems_services
         services_to_alert = []
+
 
         # Find diff
         for s in new_problems_services:
@@ -72,6 +74,7 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
             answer_text += f"{status_smail} {s.service_name}\n"
 
         if not answer_text:
+            logger.debug("New services not exist")
             # Wait
             await asyncio.sleep(UPDATE_TIME * 60)
             continue
@@ -79,14 +82,19 @@ async def update_loop(dp: Dispatcher, bot: Bot) -> None:
         # Send broadcast
         for u in await repo.get_all_users():
             try:
-                if (datetime.now() - u.last_update_time).seconds * 60 >= u.update_delay_min:
+                logger.debug(u.update_delay_min)
+                logger.debug(u.last_update_time)
+
+                if (datetime.now() - u.last_update_time).seconds / 60 >= u.update_delay_min:
                    u.last_update_time = datetime.now()
                    await repo.save_user(u)
 
                    await bot.send_message(u.tg_id, answer_text)
+                else:
+                    logger.debug("Skip user, wait")
             except aiogram.exceptions.AiogramError as e:
                 logger.error(f"Error when send broadcast to user {u}: '{e}'")
 
 
         # Wait
-        await asyncio.sleep(10 * 60)
+        await asyncio.sleep(UPDATE_TIME * 60)
